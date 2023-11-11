@@ -863,13 +863,13 @@ void EnFall_Fireball_Draw(Actor* thisx, PlayState* play) {
 
     // For the glowing sphere of fire
     gSPSegment(POLY_XLU_DISP++, 0x09,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, gameplayFrames, -this->fireballYTexScroll2, 64, 64, 1,
-                                -gameplayFrames, -this->fireballYTexScroll1, 64, 64));
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, gameplayFrames, -this->fireballYTexScroll2, 64, 64,
+                                1, -gameplayFrames, -this->fireballYTexScroll1, 64, 64));
 
     // For the "flecks" of fire around the fireball
     gSPSegment(POLY_XLU_DISP++, 0x0A,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, gameplayFrames * 2, -this->fireballYTexScroll1, 64, 64, 1,
-                                -gameplayFrames * 2, -this->fireballYTexScroll1, 64, 64));
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, gameplayFrames * 2, -this->fireballYTexScroll1, 64,
+                                64, 1, -gameplayFrames * 2, -this->fireballYTexScroll1, 64, 64));
 
     gDPSetColorDither(POLY_XLU_DISP++, G_CD_NOISE);
     gDPSetAlphaDither(POLY_XLU_DISP++, G_AD_NOISE);

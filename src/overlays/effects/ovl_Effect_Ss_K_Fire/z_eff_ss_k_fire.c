@@ -56,9 +56,9 @@ void EffectSsKFire_Draw(PlayState* play, u32 index, EffectSs* this) {
     Matrix_Translate(this->pos.x, this->pos.y, this->pos.z, MTXMODE_NEW);
     Matrix_Scale(xzScale, yScale, xzScale, MTXMODE_APPLY);
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
-    gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, play->state.frames * this->rScroll, 0x20,
-                                0x80));
+    gSPSegment(
+        POLY_XLU_DISP++, 0x08,
+        Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, play->state.frames * this->rScroll, 32, 128));
 
     if (this->rType >= 100) {
         gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 255, 0, this->rAlpha);

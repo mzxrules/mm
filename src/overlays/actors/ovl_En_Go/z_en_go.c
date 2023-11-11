@@ -408,8 +408,8 @@ void EnGo_DrawSteam(EnGoEffect effect[ENGO_EFFECT_COUNT], PlayState* play2) {
         alpha *= 255.0f;
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 195, 225, 235, (u8)alpha);
         gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, (effect->alphaNumer + (i * 3)) * 3,
-                                    (effect->alphaNumer + (i * 3)) * 15, 0x20, 0x40, 1, 0, 0, 0x20, 0x20));
+                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, (effect->alphaNumer + (i * 3)) * 3,
+                                    (effect->alphaNumer + (i * 3)) * 15, 32, 64, 1, 0, 0, 32, 32));
 
         Matrix_Translate(effect->pos.x, effect->pos.y, effect->pos.z, MTXMODE_NEW);
         Matrix_ReplaceRotation(&play->billboardMtxF);
@@ -1411,7 +1411,7 @@ void EnGo_DrawIceBlockWhenFrozen(EnGo* this, PlayState* play, f32 scale, f32 alp
         y1 = play->gameplayFrames % 256;
         y2 = (play->gameplayFrames * 2) % 256;
         gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, y1, 0x20, 0x10, 1, 0, y2, 0x40, 0x20));
+                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, y1, 32, 16, 1, 0, y2, 64, 32));
         gDPSetEnvColor(POLY_XLU_DISP++, 0, 50, 100, (u8)alpha);
         gSPDisplayList(POLY_XLU_DISP++, gEffIceFragment3DL);
 

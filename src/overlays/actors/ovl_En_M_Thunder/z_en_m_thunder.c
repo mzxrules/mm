@@ -496,14 +496,15 @@ void EnMThunder_Draw(Actor* thisx, PlayState* play2) {
         case ENMTHUNDER_SUBTYPE_SPIN_GREAT:
         case ENMTHUNDER_SUBTYPE_SPIN_REGULAR:
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0xFF - ((u16)(s32)(this->scroll * 30.0f) & 0xFF), 0, 64,
-                                        32, 1, 0xFF - ((u16)(s32)(this->scroll * 20.0f) & 0xFF), 0, 8, 8));
+                       Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE,
+                                        0xFF - ((u16)(s32)(this->scroll * 30.0f) & 0xFF), 0, 64, 32, 1,
+                                        0xFF - ((u16)(s32)(this->scroll * 20.0f) & 0xFF), 0, 8, 8));
             break;
 
         case ENMTHUNDER_SUBTYPE_SWORDBEAM_GREAT:
         case ENMTHUNDER_SUBTYPE_SWORDBEAM_REGULAR:
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 16, 64, 1, 0,
+                       Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 16, 64, 1, 0,
                                         0x1FF - ((u16)(s32)(this->scroll * 10.0f) & 0x1FF), 32, 128));
             break;
 
@@ -568,7 +569,7 @@ void EnMThunder_Draw(Actor* thisx, PlayState* play2) {
 
     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPSegment(POLY_XLU_DISP++, 0x09,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, (play->gameplayFrames * 5) & 0xFF, 0, 32, 32, 1,
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, (play->gameplayFrames * 5) & 0xFF, 0, 32, 32, 1,
                                 (play->gameplayFrames * 20) & 0xFF, (play->gameplayFrames * y2Scroll) & 0xFF, 8, 8));
     gSPDisplayList(POLY_XLU_DISP++, gSpinAttackChargingDL);
 

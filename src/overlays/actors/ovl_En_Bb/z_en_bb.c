@@ -708,9 +708,9 @@ void EnBb_Draw(Actor* thisx, PlayState* play) {
         Matrix_Scale(this->flameScaleX, this->flameScaleY, 1.0f, MTXMODE_APPLY);
         gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 255, 255, 255);
         gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 255, 0);
-        gSPSegment(
-            POLY_XLU_DISP++, 0x08,
-            Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, (play->gameplayFrames * -20) & 0x1FF, 32, 128));
+        gSPSegment(POLY_XLU_DISP++, 0x08,
+                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, 0,
+                                    (play->gameplayFrames * -20) % (128U << 2), 32, 128));
         currentMatrixState->mf[3][1] -= 47.0f * this->flameScaleY;
         gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_XLU_DISP++, gEffFire1DL);

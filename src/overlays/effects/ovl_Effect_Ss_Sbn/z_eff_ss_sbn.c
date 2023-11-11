@@ -155,7 +155,7 @@ void EffectSsSbn_DrawSliding(PlayState* play, u32 index, EffectSs* this) {
         this->rScroll += this->rScrollStep;
     }
     gSPSegment(POLY_XLU_DISP++, 0x09,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, this->rScroll, 0x20, 0x20));
+               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, this->rScroll, 32, 32));
     gSPDisplayList(POLY_XLU_DISP++, gEffPoppedDekuBubbleSlidingDL);
 
     CLOSE_DISPS(gfxCtx);

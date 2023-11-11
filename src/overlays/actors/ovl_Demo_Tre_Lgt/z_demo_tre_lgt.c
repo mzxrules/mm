@@ -148,7 +148,7 @@ s32 DemoTreLgt_OverrideLimbDraw(PlayState* play, SkelCurve* skelCuve, s32 limbIn
     OPEN_DISPS(play->state.gfxCtx);
 
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, (play->state.frames * 2) % 256, 0, 64, 32, 1,
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, (play->state.frames * 2) % 256, 0, 64, 32, 1,
                                 (play->state.frames * -2) % 256, 0, 64, 32));
 
     if (limbIndex == OBJECT_BOX_LIGHT_LIMB_01) {

@@ -1111,7 +1111,7 @@ void EnDno_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
 
         gSPMatrix(gfxXlu, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPSegment(&gfxXlu[1], 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, 0, -frames * 20, 0x20, 0x80));
+                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, 0, -frames * 20, 32, 128));
         gDPSetPrimColor(&gfxXlu[2], 0x80, 0x80, 255, 255, 0, 255);
         gDPSetEnvColor(&gfxXlu[3], 255, 0, 0, 0);
         gSPDisplayList(&gfxXlu[4], gEffFire1DL);

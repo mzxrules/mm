@@ -864,7 +864,7 @@ void ObjTokeidai_Counterweight_Draw(Actor* thisx, PlayState* play) {
 
     // For scrolling the spotlight's mask texture down the length of the light beam.
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 0x20, 0x40, 1, -gameplayFrames, 0, 0x20, 0x20));
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, -gameplayFrames, 0, 32, 32));
 
     // Draws the counterweight
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);

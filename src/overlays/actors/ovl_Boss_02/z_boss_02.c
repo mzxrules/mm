@@ -1578,8 +1578,8 @@ void Boss02_DrawEffects(PlayState* play) {
 
             gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 185, 140, 70, alpha);
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, effect->timer + (i * 3), (effect->timer + (i * 3)) * 5,
-                                        32, 64, 1, 0, 0, 32, 32));
+                       Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, effect->timer + (i * 3),
+                                        (effect->timer + (i * 3)) * 5, 32, 64, 1, 0, 0, 32, 32));
 
             Matrix_Translate(effect->pos.x, effect->pos.y, effect->pos.z, MTXMODE_NEW);
             Matrix_ReplaceRotation(&play->billboardMtxF);
@@ -1643,8 +1643,8 @@ void Boss02_DrawEffects(PlayState* play) {
 
             gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 30, 30, 30, (u8)effect->alpha);
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, effect->timer + (i * 3), (effect->timer + (i * 3)) * 5,
-                                        32, 64, 1, 0, 0, 32, 32));
+                       Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, effect->timer + (i * 3),
+                                        (effect->timer + (i * 3)) * 5, 32, 64, 1, 0, 0, 32, 32));
 
             Matrix_Translate(effect->pos.x, effect->pos.y, effect->pos.z, MTXMODE_NEW);
             Matrix_ReplaceRotation(&play->billboardMtxF);

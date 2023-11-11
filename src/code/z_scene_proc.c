@@ -84,9 +84,10 @@ void AnimatedMat_DrawTexScroll(PlayState* play, s32 segment, void* params) {
  * Returns a pointer to a two layer texture scroll displaylist.
  */
 Gfx* AnimatedMat_TwoLayerTexScroll(PlayState* play, AnimatedMatTexScrollParams* params) {
-    return Gfx_TwoTexScroll(play->state.gfxCtx, 0, params[0].xStep * sMatAnimStep, -(params[0].yStep * sMatAnimStep),
-                            params[0].width, params[0].height, 1, params[1].xStep * sMatAnimStep,
-                            -(params[1].yStep * sMatAnimStep), params[1].width, params[1].height);
+    return Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, params[0].xStep * sMatAnimStep,
+                            -(params[0].yStep * sMatAnimStep), params[0].width, params[0].height, 1,
+                            params[1].xStep * sMatAnimStep, -(params[1].yStep * sMatAnimStep), params[1].width,
+                            params[1].height);
 }
 
 /**
@@ -514,20 +515,21 @@ void Scene_DrawConfig3(PlayState* play) {
     gSPSegment(POLY_XLU_DISP++, 0x08, Gfx_TexScroll(play->state.gfxCtx, 0, (frames * 1) % 64, 256, 16));
 
     gSPSegment(POLY_XLU_DISP++, 0x09,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 127 - (frames % 128), (frames * 1) % 128, 32, 32, 1,
-                                frames % 128, (frames * 1) % 128, 32, 32));
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 127 - (frames % 128), (frames * 1) % 128, 32, 32,
+                                1, frames % 128, (frames * 1) % 128, 32, 32));
 
-    gSPSegment(POLY_OPA_DISP++, 0x0A,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 32, 1, 0, 127 - (frames * 1) % 128, 32, 32));
+    gSPSegment(
+        POLY_OPA_DISP++, 0x0A,
+        Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 32, 1, 0, 127 - (frames * 1) % 128, 32, 32));
 
     gSPSegment(POLY_OPA_DISP++, 0x0B, Gfx_TexScroll(play->state.gfxCtx, 0, (frames * 1) % 128, 32, 32));
 
-    gSPSegment(
-        POLY_XLU_DISP++, 0x0C,
-        Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, (frames * 50) % 2048, 8, 512, 1, 0, (frames * 60) % 2048, 8, 512));
+    gSPSegment(POLY_XLU_DISP++, 0x0C,
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, (frames * 50) % 2048, 8, 512, 1, 0,
+                                (frames * 60) % 2048, 8, 512));
 
     gSPSegment(POLY_OPA_DISP++, 0x0D,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, (frames * 1) % 128, 32, 32));
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, 0, (frames * 1) % 128, 32, 32));
 
     gDPPipeSync(POLY_XLU_DISP++);
     gDPSetEnvColor(POLY_XLU_DISP++, 128, 128, 128, 128);

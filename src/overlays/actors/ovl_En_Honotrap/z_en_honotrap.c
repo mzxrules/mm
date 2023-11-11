@@ -257,7 +257,7 @@ void EnHonotrap_InitFlameGroup(EnHonotrap* this, PlayState* play) {
     for (i = 0; i < ARRAY_COUNT(flameGroup->flameList); i++) {
         flameGroup->flameList[i].flameScroll = flameScroll;
         flameScroll += (s32)Rand_ZeroFloat(300.0f) + 100;
-        flameScroll %= 0x200U;
+        flameScroll %= (128U << 2);
     }
 
     Actor_PlaySfx(&this->actor, NA_SE_EV_FLAME_IGNITION);
@@ -451,9 +451,7 @@ void EnHonotrap_FlameDrop(EnHonotrap* this, PlayState* play) {
         if ((this->collider.tris.base.atFlags & AT_HIT) && !(this->collider.tris.base.atFlags & AT_BOUNCED)) {
             func_800B8D98(play, &this->actor, 5.0f, this->actor.yawTowardsPlayer, 0.0f);
         }
-        this->actor.velocity.z = 0.0f;
-        this->actor.velocity.y = 0.0f;
-        this->actor.velocity.x = 0.0f;
+        this->actor.velocity.x = this->actor.velocity.y = this->actor.velocity.z = 0.0f;
         EnHonotrap_SetupFlameVanish(this);
         return;
     }
@@ -485,16 +483,16 @@ void EnHonotrap_SetupFlameMove(EnHonotrap* this) {
 void EnHonotrap_FlameMove(EnHonotrap* this, PlayState* play) {
     Actor* thisx = &this->actor;
     Vec3f speed;
-    s32 cond;
+    s32 targetReached;
 
     Math_StepToF(&this->speedMod, 13.0f, 0.5f);
     speed.x = fabsf(this->speedMod * thisx->velocity.x);
     speed.y = fabsf(this->speedMod * thisx->velocity.y);
     speed.z = fabsf(this->speedMod * thisx->velocity.z);
-    cond = true;
-    cond &= Math_StepToF(&thisx->world.pos.x, this->targetPos.x, speed.x);
-    cond &= Math_StepToF(&thisx->world.pos.y, this->targetPos.y, speed.y);
-    cond &= Math_StepToF(&thisx->world.pos.z, this->targetPos.z, speed.z);
+    targetReached = true;
+    targetReached &= Math_StepToF(&thisx->world.pos.x, this->targetPos.x, speed.x);
+    targetReached &= Math_StepToF(&thisx->world.pos.y, this->targetPos.y, speed.y);
+    targetReached &= Math_StepToF(&thisx->world.pos.z, this->targetPos.z, speed.z);
     Actor_UpdateBgCheckInfo(play, thisx, 10.0f, 10.0f, 0.0f,
                             UPDBGCHECKINFO_FLAG_1 | UPDBGCHECKINFO_FLAG_4 | UPDBGCHECKINFO_FLAG_8 |
                                 UPDBGCHECKINFO_FLAG_10);
@@ -522,7 +520,7 @@ void EnHonotrap_FlameMove(EnHonotrap* this, PlayState* play) {
         EnHonotrap_SetupFlameVanish(this);
     } else {
         EnHonotrap_FlameCollisionCheck(this, play);
-        if (cond != 0) {
+        if (targetReached) {
             EnHonotrap_SetupFlameChase(this);
         }
     }
@@ -532,8 +530,8 @@ void EnHonotrap_SetupFlameChase(EnHonotrap* this) {
     this->actionFunc = EnHonotrap_FlameChase;
     this->actor.speed = 0.0f;
     this->actor.velocity.x = this->actor.velocity.y = this->actor.velocity.z = 0.0f;
-    this->timer = 100;
     this->actor.world.rot.x = this->actor.world.rot.y = this->actor.world.rot.z = 0;
+    this->timer = 100;
 }
 
 void EnHonotrap_FlameChase(EnHonotrap* this, PlayState* play) {
@@ -649,7 +647,7 @@ void EnHonotrap_FlameGroup(EnHonotrap* this, PlayState* play) {
         var_fs0 += 1.0f / 6;
         flameElem->unkC *= (0.006f * (((1.0f - flameGroup->unk4) * 0.8f) + 0.2f));
         flameElem->flameScroll += flameScrollDisplacement;
-        flameElem->flameScroll %= 0x200U;
+        flameElem->flameScroll %= (128U << 2);
     }
 
     if (sp78 || (this->timer <= 0)) {
@@ -723,7 +721,7 @@ void EnHonotrap_UpdateFlame(Actor* thisx, PlayState* play) {
     Actor_PlaySfx(&this->actor, NA_SE_EV_BURN_OUT - SFX_FLAG);
     this->actionFunc(this, play);
     this->flameScroll -= 20;
-    this->flameScroll %= 0x200U;
+    this->flameScroll %= (128U << 2);
 }
 
 void EnHonotrap_UpdateFlameGroup(Actor* thisx, PlayState* play) {
@@ -762,7 +760,7 @@ void EnHonotrap_DrawFlame(Actor* thisx, PlayState* play) {
 
     Gfx_SetupDL25_Xlu(play->state.gfxCtx);
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, this->flameScroll, 32, 128));
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, 0, this->flameScroll, 32, 128));
     gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 200, 0, 255);
     gDPSetEnvColor(POLY_XLU_DISP++, 255, 0, 0, 0);
     Matrix_RotateYS(Camera_GetCamDirYaw(GET_ACTIVE_CAM(play)) + 0x8000, MTXMODE_APPLY);
@@ -793,7 +791,8 @@ void EnHonotrap_DrawFlameGroup(Actor* thisx, PlayState* play) {
         flameElem = &flameGroup->flameList[i];
         if (flameElem->isDrawn) {
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0, flameElem->flameScroll, 32, 128));
+                       Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, 0, flameElem->flameScroll,
+                                        32, 128));
             Matrix_SetTranslateRotateYXZ(flameElem->pos.x, flameElem->pos.y - (4000.0f * flameElem->unkC),
                                          flameElem->pos.z, &camDir);
             Matrix_Scale(((fabsf(Math_SinS((s16)(camDir.y - thisx->shape.rot.y) >> 1)) * 0.2f) + 1.7f) *

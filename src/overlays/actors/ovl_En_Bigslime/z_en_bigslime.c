@@ -3148,8 +3148,9 @@ void EnBigslime_DrawShatteringEffects(EnBigslime* this, PlayState* play) {
     if (this->shockwaveAlpha > 0) {
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 195, 225, 235, this->shockwaveAlpha);
         gSPSegment(POLY_XLU_DISP++, 0x0D,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, play->gameplayFrames % 128, (u8)(play->gameplayFrames * 8),
-                                    32, 64, 1, (-play->gameplayFrames * 2) % 64, 0, 16, 16));
+                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, play->gameplayFrames % 128,
+                                    (play->gameplayFrames * 8) % 256, 32, 64, 1, (-play->gameplayFrames * 2) % 64, 0,
+                                    16, 16));
         Matrix_Translate(this->frozenPos.x, this->frozenPos.y, this->frozenPos.z, MTXMODE_NEW);
         Matrix_Scale(this->shockwaveScale, this->shockwaveScale, this->shockwaveScale, MTXMODE_APPLY);
         gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);

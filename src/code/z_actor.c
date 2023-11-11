@@ -4868,8 +4868,8 @@ void Actor_DrawDamageEffects(PlayState* play, Actor* actor, Vec3f bodyPartsPos[]
                 // Setup to draw ice over frozen actor
 
                 gSPSegment(POLY_XLU_DISP++, 0x08,
-                           Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, gameplayFrames & 0xFF, 32, 16, 1, 0,
-                                            (gameplayFrames * 2) & 0xFF, 64, 32));
+                           Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, gameplayFrames % 256, 32, 16, 1, 0,
+                                            (gameplayFrames * 2) % 256, 64, 32));
                 gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 170, 255, 255, 255);
                 gSPDisplayList(POLY_XLU_DISP++, gEffIceFragment2MaterialDL);
 
@@ -4924,8 +4924,8 @@ void Actor_DrawDamageEffects(PlayState* play, Actor* actor, Vec3f bodyPartsPos[]
                 for (bodyPartIndex = 0; bodyPartIndex < bodyPartsCount; bodyPartIndex++, bodyPartsPos++) {
                     twoTexScrollParam = ((bodyPartIndex * 3) + gameplayFrames);
                     gSPSegment(POLY_XLU_DISP++, 0x08,
-                               Gfx_TwoTexScroll(play->state.gfxCtx, 0, twoTexScrollParam * 3, twoTexScrollParam * -12,
-                                                32, 64, 1, 0, 0, 32, 32));
+                               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, twoTexScrollParam * 3,
+                                                twoTexScrollParam * -12, 32, 64, 1, 0, 0, 32, 32));
 
                     Matrix_Translate(bodyPartsPos->x, bodyPartsPos->y, bodyPartsPos->z, MTXMODE_NEW);
                     Matrix_ReplaceRotation(&play->billboardMtxF);
@@ -4971,8 +4971,8 @@ void Actor_DrawDamageEffects(PlayState* play, Actor* actor, Vec3f bodyPartsPos[]
                     gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 255, type, (u8)alpha);
 
                     gSPSegment(POLY_XLU_DISP++, 0x08,
-                               Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, 0, 32, 64, 1, 0,
-                                                ((bodyPartIndex * 10 + gameplayFrames) * -20) & 0x1FF, 32, 128));
+                               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, 0, 32, 64, 1, 0,
+                                                ((bodyPartIndex * 10 + gameplayFrames) * -20) % (128U << 2), 32, 128));
 
                     Matrix_RotateYF(M_PI, MTXMODE_APPLY);
                     currentMatrix->mf[3][0] = bodyPartsPos->x;

@@ -827,9 +827,9 @@ void BgDblueMovebg_Draw(Actor* thisx, PlayState* play2) {
                 if (this->unk_1D8[j][i] > 0) {
                     if (this->unk_1F8[j][i] > 0.1f) {
                         gSPSegment(gfx++, 0x09,
-                                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0,
+                                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0,
                                                     (s32)(((play->gameplayFrames % 128) * -9.0f) / this->unk_1F8[j][i]),
-                                                    0x20, 0x20, 1, 0, 0, 0x20, 0x20));
+                                                    32, 32, 1, 0, 0, 32, 32));
                     }
                     Matrix_Push();
                     Matrix_RotateXS(i * 0x2000, MTXMODE_APPLY);

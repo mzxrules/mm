@@ -1378,8 +1378,8 @@ Gfx* func_8012CB28(GraphicsContext* gfxCtx, u32 x, u32 y) {
 Gfx* Gfx_TexScroll(GraphicsContext* gfxCtx, u32 x, u32 y, s32 width, s32 height) {
     Gfx* gfx = GRAPH_ALLOC(gfxCtx, 3 * sizeof(Gfx));
 
-    x %= 2048;
-    y %= 2048;
+    x %= 512 << 2;
+    y %= 512 << 2;
 
     gDPTileSync(&gfx[0]);
     gDPSetTileSize(&gfx[1], 0, x, y, (x + ((width - 1) << 2)), (y + ((height - 1) << 2)));
@@ -1392,10 +1392,10 @@ Gfx* Gfx_TwoTexScroll(GraphicsContext* gfxCtx, s32 tile1, u32 x1, u32 y1, s32 wi
                       u32 y2, s32 width2, s32 height2) {
     Gfx* gfx = GRAPH_ALLOC(gfxCtx, 5 * sizeof(Gfx));
 
-    x1 %= 2048;
-    y1 %= 2048;
-    x2 %= 2048;
-    y2 %= 2048;
+    x1 %= 512 << 2;
+    y1 %= 512 << 2;
+    x2 %= 512 << 2;
+    y2 %= 512 << 2;
 
     gDPTileSync(&gfx[0]);
     gDPSetTileSize(&gfx[1], tile1, x1, y1, (x1 + ((width1 - 1) << 2)), (y1 + ((height1 - 1) << 2)));

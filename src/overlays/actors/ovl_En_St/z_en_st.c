@@ -255,7 +255,8 @@ void func_808A54B0(EnSt* this, PlayState* play) {
         Matrix_Scale(0.06f, 0.12f, 0.06f, MTXMODE_APPLY);
 
         gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPSegment(POLY_XLU_DISP++, 0x08, Gfx_TwoTexScroll(play->state.gfxCtx, 0, 195, 0, 0x40, 0x20, 1, 215, 0, 8, 8));
+        gSPSegment(POLY_XLU_DISP++, 0x08,
+                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 195, 0, 64, 32, 1, 215, 0, 8, 8));
 
         temp_f0 = (f32)this->unk_310 / 8;
         if (temp_f0 > 1.0f) {

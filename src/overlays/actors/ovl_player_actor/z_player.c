@@ -12737,8 +12737,8 @@ void Player_Draw(Actor* thisx, PlayState* play) {
             f32 temp_fa0 = this->unk_B48;
 
             gSPSegment(POLY_XLU_DISP++, 0x08,
-                       Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, -(s32)play->gameplayFrames & 0x7F, 0x20, 0x20, 1, 0,
-                                        ((s32)play->gameplayFrames * -2) & 0x7F, 0x20, 0x20));
+                       Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, ((s32)play->gameplayFrames * -1) % 128U,
+                                        32, 32, 1, 0, ((s32)play->gameplayFrames * -2) % 128U, 32, 32));
 
             Matrix_Scale(temp_fa0, temp_fa0, temp_fa0, MTXMODE_APPLY);
             gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);

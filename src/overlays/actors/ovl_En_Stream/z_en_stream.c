@@ -142,8 +142,8 @@ void EnStream_Draw(Actor* thisx, PlayState* play) {
     gSPMatrix(&gfx[0], Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     multipliedFrames = frames * 20;
     gSPSegment(&gfx[1], 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, frames * 30, -multipliedFrames, 64, 64, 1, multipliedFrames,
-                                -multipliedFrames, 64, 64));
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, frames * 30, -multipliedFrames, 64, 64, 1,
+                                multipliedFrames, -multipliedFrames, 64, 64));
     gSPDisplayList(&gfx[2], gWaterVortexDL);
     POLY_XLU_DISP = &gfx[3];
 

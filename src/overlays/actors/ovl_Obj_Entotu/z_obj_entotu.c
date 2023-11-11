@@ -113,14 +113,14 @@ void func_80A34A44(ObjEntotu* this, PlayState* play) {
 }
 
 void func_80A34B28(ObjEntotu* this, PlayState* play) {
-    u8 sp57;
-    u8 sp56;
+    u8 y1;
+    u8 y2;
     s32 i;
 
     this->unk_1B8.y += 1.8f;
     this->unk_1B8.z += 0.6f;
-    sp57 = 0x7F - (u8)this->unk_1B8.y;
-    sp56 = 0x7F - (u8)this->unk_1B8.z;
+    y1 = 0x7F - (u8)this->unk_1B8.y;
+    y2 = 0x7F - (u8)this->unk_1B8.z;
 
     this->unk_1B8.x = CLAMP(this->unk_1B8.x, 0.0f, 1.0f);
 
@@ -139,7 +139,7 @@ void func_80A34B28(ObjEntotu* this, PlayState* play) {
         Gfx_SetupDL25_Opa(play->state.gfxCtx);
 
         gSPSegment(POLY_XLU_DISP++, 0x08,
-                   Gfx_TwoTexScroll(play->state.gfxCtx, 0, 0, sp57, 0x20, 0x20, 1, 0, sp56, 0x20, 0x20));
+                   Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 0, y1, 32, 32, 1, 0, y2, 32, 32));
         gSPSegment(POLY_XLU_DISP++, 0x09, Lib_SegmentedToVirtual(this->unk_148));
         gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_XLU_DISP++, object_f53_obj_DL_001C00);

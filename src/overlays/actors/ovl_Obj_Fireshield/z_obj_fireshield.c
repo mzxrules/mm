@@ -388,8 +388,8 @@ void ObjFireshield_Draw(Actor* thisx, PlayState* play) {
     gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 220, 0, this->unk_1A6);
     gDPSetEnvColor(POLY_XLU_DISP++, 255, 0, 0, 0);
     gSPSegment(POLY_XLU_DISP++, 0x08,
-               Gfx_TwoTexScroll(play->state.gfxCtx, 0, this->unk_1A4 & 0x7F, 0, 0x20, 0x40, 1, 0,
-                                (this->unk_1A4 * -15) & 0xFF, 0x20, 0x40));
+               Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, this->unk_1A4 % 128U, 0, 32, 64, 1, 0,
+                                (this->unk_1A4 * -15) % 256U, 32, 64));
     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(POLY_XLU_DISP++, gameplay_keep_DL_02E510);
 
