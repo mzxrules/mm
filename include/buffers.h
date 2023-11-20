@@ -6,7 +6,6 @@
 #include "stack.h"
 
 // pre-boot variables
-extern u16 gFramebuffer1[SCREEN_HEIGHT][SCREEN_WIDTH]; // at 0x80000500
 extern u8 gPreBootBuffer[];
 
 
@@ -17,12 +16,32 @@ extern u8 gAudioHeap[0x138000];
 extern u8 gSystemHeap[];
 
 
+typedef union {
+    u16 gFramebufferHiRes1[HIRES_BUFFER_HEIGHT][HIRES_BUFFER_WIDTH] ALIGNED(64);
+    struct {
+        u16 gFramebuffer1[SCREEN_HEIGHT][SCREEN_WIDTH] ALIGNED(64);
+        u8 gSkyboxBuffer[UNK_SIZE] ALIGNED(16);
+    };
+} BufferLow; // at 0x80000500
+
+typedef union {
+    u16 gFramebufferHiRes0[HIRES_BUFFER_HEIGHT][HIRES_BUFFER_WIDTH] ALIGNED(64);
+    struct {
+        u8 gPictoPhotoI8[PICTO_PHOTO_SIZE] ALIGNED(64);
+        u8 D_80784600[0x56200] ALIGNED(64);
+        u16 gFramebuffer0[SCREEN_HEIGHT][SCREEN_WIDTH] ALIGNED(64);
+    };
+} BufferHigh;
+
+extern BufferLow gLowBuffer;
+extern BufferHigh gHiBuffer;
+
 /**
  * The following variables are part of the `framebuffers` segment
  */
-extern u8 gPictoPhotoI8[PICTO_PHOTO_SIZE];
-extern u8 D_80784600[0x56200];
-extern u16 gFramebuffer0[SCREEN_HEIGHT][SCREEN_WIDTH];
+//extern u8 gPictoPhotoI8[PICTO_PHOTO_SIZE];
+//extern u8 D_80784600[0x56200];
+//extern u16 gFramebuffer0[SCREEN_HEIGHT][SCREEN_WIDTH];
 
 #ifndef FRAMEBUFFERS_START_ADDR
 /**
@@ -39,7 +58,7 @@ extern u16 gFramebuffer0[SCREEN_HEIGHT][SCREEN_WIDTH];
  * buffers) up to the start of the `framebuffers` segmemt.
  * @see `Main`
  */
-#define FRAMEBUFFERS_START_ADDR (PHYS_TO_K0(0x800000) - sizeof(gFramebuffer0) - sizeof(D_80784600) - sizeof(gPictoPhotoI8))
+#define FRAMEBUFFERS_START_ADDR 0x80780000//(PHYS_TO_K0(0x800000) - sizeof(gFramebuffer0) - sizeof(D_80784600) - sizeof(gPictoPhotoI8))
 #endif
 
 

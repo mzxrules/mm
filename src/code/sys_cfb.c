@@ -1,4 +1,4 @@
-#include "prevent_bss_reordering.h"
+//#include "prevent_bss_reordering.h"
 #include "z64.h"
 #include "buffers.h"
 #include "regs.h"
@@ -94,8 +94,8 @@ void SysCfb_SetHiResMode(void) {
 }
 
 void SysCfb_Init(void) {
-    sCfbLoRes1 = gFramebuffer1;
-    sCfbLoRes0 = gFramebuffer0;
+    sCfbLoRes1 = gLowBuffer.gFramebuffer1;
+    sCfbLoRes0 = gHiBuffer.gFramebuffer0;
     sCfbHiRes1 = gFramebufferHiRes1;
     sCfbHiRes0 = gFramebufferHiRes0;
     SysCfb_SetLoResMode();
