@@ -42,10 +42,10 @@ void Main_InitFramebuffer(u32* framebuffer, size_t numBytes, u32 value) {
 }
 
 void Main_InitScreen(void) {
-    Main_InitFramebuffer((u32*)gLowBuffer.gFramebuffer1, sizeof(gLowBuffer.gFramebuffer1),
+    Main_InitFramebuffer((u32*)gLoBuffer.gFramebuffer1, sizeof(gLoBuffer.gFramebuffer1),
                          (GPACK_RGBA5551(0, 0, 0, 1) << 16) | GPACK_RGBA5551(0, 0, 0, 1));
     ViConfig_UpdateVi(false);
-    osViSwapBuffer(gLowBuffer.gFramebuffer1);
+    osViSwapBuffer(gLoBuffer.gFramebuffer1);
     osViBlack(false);
 }
 
@@ -53,8 +53,8 @@ void Main_InitMemory(void) {
     void* memStart = (void*)0x80000400;
     void* memEnd = OS_PHYSICAL_TO_K0(osMemSize);
 
-    Main_ClearMemory(memStart, SEGMENT_START(framebuffer_1));
-    Main_ClearMemory(SEGMENT_START(framebuffer_1) + sizeof(gLowBuffer.gFramebuffer1), SEGMENT_START(boot));
+    Main_ClearMemory(memStart, SEGMENT_START(framebuffer_lo));
+    Main_ClearMemory(SEGMENT_START(framebuffer_lo) + sizeof(gLoBuffer.gFramebuffer1), SEGMENT_START(boot));
 
     // Clear all the buffers after the `code` segment, up to the end of the available RAM space
     Main_ClearMemory(SEGMENT_END(code), memEnd);

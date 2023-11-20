@@ -11,10 +11,10 @@ beginseg
 endseg
 
 beginseg
-    name "framebuffer_1"
+    name "framebuffer_lo"
     address 0x80000500
     flags NOLOAD
-    include "build/src/buffers/framebuffer_1.o"
+    include "build/src/buffers/framebuffer_lo.o"
 endseg
 
 beginseg
@@ -641,11 +641,11 @@ beginseg
 endseg
 
 beginseg
-    name "framebuffers"
+    name "framebuffer_hi"
     flags NOLOAD
     // This has to be fixed location in VRAM. See the FRAMEBUFFERS_START_ADDR define on `buffers.h` for a more in-depth explanation
     address 0x80780000
-    include "build/src/buffers/framebuffers.o"
+    include "build/src/buffers/framebuffer_hi.o"
 endseg
 
 beginseg

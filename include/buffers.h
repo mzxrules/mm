@@ -5,10 +5,6 @@
 #include "macros.h"
 #include "stack.h"
 
-// pre-boot variables
-extern u8 gPreBootBuffer[];
-
-
 extern u8 gGfxSPTaskYieldBuffer[OS_YIELD_DATA_SIZE];
 extern STACK(gGfxSPTaskStack, 0x400);
 extern GfxPool gGfxPools[2];
@@ -33,7 +29,7 @@ typedef union {
     };
 } BufferHigh;
 
-extern BufferLow gLowBuffer;
+extern BufferLow gLoBuffer;
 extern BufferHigh gHiBuffer;
 
 /**
@@ -58,7 +54,7 @@ extern BufferHigh gHiBuffer;
  * buffers) up to the start of the `framebuffers` segmemt.
  * @see `Main`
  */
-#define FRAMEBUFFERS_START_ADDR 0x80780000//(PHYS_TO_K0(0x800000) - sizeof(gFramebuffer0) - sizeof(D_80784600) - sizeof(gPictoPhotoI8))
+#define FRAMEBUFFERS_START_ADDR (PHYS_TO_K0(0x800000) - sizeof(gHiBuffer))
 #endif
 
 

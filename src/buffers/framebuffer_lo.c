@@ -2,4 +2,4 @@
 
 // Don't add symbols here unless you know what you are doing.
 
-BufferLow gLowBuffer;
+BufferLow gLoBuffer;
