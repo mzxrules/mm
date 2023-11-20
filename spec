@@ -18,13 +18,6 @@ beginseg
 endseg
 
 beginseg
-    name "pre_boot_buffer"
-    flags NOLOAD
-    // This segment is a placeholder so we can symbolize the address range
-    include "build/src/buffers/pre_boot_buffer.o"
-endseg
-
-beginseg
     name "boot"
     address 0x80080060
     include "build/src/boot/boot_main.o"
