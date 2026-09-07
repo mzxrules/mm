@@ -5,6 +5,7 @@
  */
 
 #include "z_item_etcetera.h"
+#include "z64draw.h"
 #include "z64play.h"
 #include "global.h"
 

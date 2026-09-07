@@ -4,6 +4,8 @@
 #include "ultra64.h"
 #include "PR/os.h"
 
+#include "versions.h"
+
 #include "z64inventory.h"
 #include "z64item.h"
 #include "z64math.h"
@@ -307,6 +309,9 @@ typedef struct SaveInfo {
     /* 0xED4 */ u8 weekEventReg[100];                  // "week_event_reg"
     /* 0xF38 */ u32 regionsVisited;                    // "area_arrival"
     /* 0xF3C */ u32 worldMapCloudVisibility;           // "cloud_clear"
+#if MM_VERSION < N64_US
+                UNK_TYPE1 unk_F40_jp[0x384];
+#endif
     /* 0xF40 */ u8 unk_F40;                            // "oca_rec_flag"                   has scarecrows song
     /* 0xF41 */ u8 scarecrowSpawnSongSet;              // "oca_rec_flag8"
     /* 0xF42 */ u8 scarecrowSpawnSong[128];
@@ -341,6 +346,7 @@ typedef struct Save {
 
 typedef struct SaveContext {
     /* 0x0000 */ Save save;
+#if MM_VERSION >= N64_US
     /* 0x100C */ u8 eventInf[8]; // "event_inf"
     /* 0x1014 */ u8 unk_1014;    // "stone_set_flag"
     /* 0x1015 */ u8 bButtonStatus;
@@ -395,6 +401,62 @@ typedef struct SaveContext {
     /* 0x3F30 */ s16 magicFillTarget;     // target used to fill magic "magic_now_now"
     /* 0x3F32 */ s16 magicToConsume;      // accumulated magic that is requested to be consumed "magic_used"
     /* 0x3F34 */ s16 magicToAdd;          // accumulated magic that is requested to be added "magic_recovery"
+#else
+                 u8 pictoPhotoI5[PICTO_PHOTO_COMPRESSED_SIZE]; // buffer containing the pictograph photo, compressed to I5 from I8
+                 s32 fileNum;                           // "file_no"
+                 s16 powderKegTimer;                    // "big_bom_timer"
+                 u8 unk_1014;    // "stone_set_flag"
+                 u8 unk_3CA7;                           // "day_night_flag"
+                 u16 jinxTimer;
+                 u8 unk_3CA6;
+                 u8 bButtonStatus;
+                 s32 gameMode;                          // "mode"
+                 s32 sceneLayer;                        // "counter"
+                 s32 respawnFlag;                       // "restart_flag"
+                 RespawnData respawn[RESPAWN_MODE_MAX]; // "restart_data"
+                 f32 entranceSpeed;                     // "player_wipe_speedF"
+                 u16 entranceSound;                     // "player_wipe_door_SE"
+                 u8 unk_3DBA;                           // "player_wipe_item"
+                 u8 retainWeatherMode;                  // "next_walk"
+                 s16 dogParams;                         // OoT leftover. "dog_flag"
+                 u8 envHazardTextTriggerFlags;          // "guide_status"
+                 u8 showTitleCard;                      // "name_display"
+                 s16 nayrusLoveTimer;                   // remnant of OoT, "shield_magic_timer"
+                 u8 unk_3DC2;                           // "pad1"
+                 s16 rupeeAccumulator;                       // "lupy_udct"
+                 OSTime postmanTimerStopOsTime; // The osTime when the timer stops for the postman minigame. "get_time"
+                 u8 timerStates[TIMER_ID_MAX];  // See the `TimerState` enum. "event_fg"
+                 u8 timerDirections[TIMER_ID_MAX]; // See the `TimerDirection` enum. "calc_flag"
+                 u64 timerCurTimes[TIMER_ID_MAX]; // For countdown, the remaining time left. For countup, the time since the start. In centiseconds (1/100th sec). "event_ostime"
+                 u64 timerTimeLimits[TIMER_ID_MAX]; // The original total time given for the timer to count from, in centiseconds (1/100th sec). "event_sub"
+                 OSTime timerStartOsTimes[TIMER_ID_MAX]; // The osTime when the timer starts. "func_time"
+                 u64 timerStopTimes[TIMER_ID_MAX];  // The total amount of time taken between the start and end of the timer, in centiseconds (1/100th sec). "func_end_time"
+                 OSTime timerPausedOsTimes[TIMER_ID_MAX]; // The cumulative osTime spent with the timer paused. "func_stop_time"
+                 s16 timerX[TIMER_ID_MAX]; // "event_xp"
+                 s16 timerY[TIMER_ID_MAX]; // "event_yp"
+                 u8 bottleTimerStates[BOTTLE_MAX];           // See the `BottleTimerState` enum. "bottle_status"
+                 OSTime bottleTimerStartOsTimes[BOTTLE_MAX]; // The osTime when the timer starts. "bottle_ostime"
+                 u64 bottleTimerTimeLimits[BOTTLE_MAX]; // The original total time given before the timer expires, in centiseconds (1/100th sec). "bottle_sub"
+                 u64 bottleTimerCurTimes[BOTTLE_MAX];   // The remaining time left before the timer expires, in centiseconds (1/100th sec). "bottle_time"
+                 OSTime bottleTimerPausedOsTimes[BOTTLE_MAX]; // The cumulative osTime spent with the timer paused. "bottle_stop_time"
+                 s16 unk_3F14;             // "character_change"
+                 u8 seqId;                 // "old_bgm"
+                 u8 ambienceId;            // "old_env"
+                 u8 buttonStatus[6];       // "button_item"
+                 u8 hudVisibilityForceButtonAlphasByStatus; // if btn alphas are updated through Interface_UpdateButtonAlphas, instead update them through Interface_UpdateButtonAlphasByStatus "ck_fg"
+                 u16 nextHudVisibility;  // triggers the hud to change visibility to the requested value. Reset to HUD_VISIBILITY_IDLE when target is reached "alpha_type"
+                 u16 hudVisibility;      // current hud visibility "prev_alpha_type"
+                 u16 hudVisibilityTimer; // number of frames in the transition to a new hud visibility. Used to step alpha "alpha_count"
+                 u16 prevHudVisibility; // used to store and recover hud visibility for pause menu and text boxes "last_time_type"
+                 s16 magicState;          // determines magic meter behavior on each frame "magic_flag"
+                 s16 isMagicRequested;    // a request to add magic has been given "recovery_magic_flag"
+                 s16 magicFlag;           // Set to 0 in func_80812D94(), otherwise unused "keep_magic_flag"
+                 s16 magicCapacity;       // maximum magic available "magic_now_max"
+                 s16 magicFillTarget;     // target used to fill magic "magic_now_now"
+                 s16 magicToConsume;      // accumulated magic that is requested to be consumed "magic_used"
+                 s16 magicToAdd;          // accumulated magic that is requested to be added "magic_recovery"
+                 u8 eventInf[8]; // "event_inf"
+#endif
     /* 0x3F36 */ u16 mapIndex;            // set to enum DungeonSceneIndex when entering a dungeon related scene, or Map_GetMapIndexForOverworld on certain overworld scenes "scene_ID"
     /* 0x3F38 */ u16 minigameStatus;      // "yabusame_mode"
     /* 0x3F3A */ u16 minigameScore;       // "yabusame_total"
@@ -744,8 +806,8 @@ typedef enum {
 // Attempted Cremia Cart Ride
 #define WEEKEVENTREG_14_01 PACK_WEEKEVENTREG_FLAG(14, 0x01)
 
-#define WEEKEVENTREG_14_02 PACK_WEEKEVENTREG_FLAG(14, 0x02)
-#define WEEKEVENTREG_14_04 PACK_WEEKEVENTREG_FLAG(14, 0x04)
+#define WEEKEVENTREG_SHARP_HOSTILE_CONVERSATION PACK_WEEKEVENTREG_FLAG(14, 0x02)
+#define WEEKEVENTREG_IKANA_SPRING_RESTORED PACK_WEEKEVENTREG_FLAG(14, 0x04)
 #define WEEKEVENTREG_DRANK_CHATEAU_ROMANI PACK_WEEKEVENTREG_FLAG(14, 0x08)
 #define WEEKEVENTREG_WON_DEKU_PLAYGROUND_DAY_1 PACK_WEEKEVENTREG_FLAG(14, 0x10)
 #define WEEKEVENTREG_WON_DEKU_PLAYGROUND_DAY_2 PACK_WEEKEVENTREG_FLAG(14, 0x20)
@@ -883,13 +945,13 @@ typedef enum {
 #define WEEKEVENTREG_DEPOSITED_LETTER_TO_KAFEI_EAST_UPPER_CLOCKTOWN PACK_WEEKEVENTREG_FLAG(27, 0x08)
 #define WEEKEVENTREG_DEPOSITED_LETTER_TO_KAFEI_EAST_LOWER_CLOCKTOWN PACK_WEEKEVENTREG_FLAG(27, 0x10)
 #define WEEKEVENTREG_DEPOSITED_LETTER_TO_KAFEI_SOUTH_LOWER_CLOCKTOWN PACK_WEEKEVENTREG_FLAG(27, 0x20)
-#define WEEKEVENTREG_27_40 PACK_WEEKEVENTREG_FLAG(27, 0x40)
-#define WEEKEVENTREG_27_80 PACK_WEEKEVENTREG_FLAG(27, 0x80)
-#define WEEKEVENTREG_28_01 PACK_WEEKEVENTREG_FLAG(28, 0x01)
-#define WEEKEVENTREG_28_02 PACK_WEEKEVENTREG_FLAG(28, 0x02)
-#define WEEKEVENTREG_28_04 PACK_WEEKEVENTREG_FLAG(28, 0x04)
-#define WEEKEVENTREG_28_08 PACK_WEEKEVENTREG_FLAG(28, 0x08)
-#define WEEKEVENTREG_28_10 PACK_WEEKEVENTREG_FLAG(28, 0x10)
+#define WEEKEVENTREG_POSTMAN_CHECKED_SOUTH_UPPER_CLOCKTOWN PACK_WEEKEVENTREG_FLAG(27, 0x40)
+#define WEEKEVENTREG_POSTMAN_CHECKED_NORTH_CLOCKTOWN PACK_WEEKEVENTREG_FLAG(27, 0x80)
+#define WEEKEVENTREG_POSTMAN_CHECKED_EAST_UPPER_CLOCKTOWN PACK_WEEKEVENTREG_FLAG(28, 0x01)
+#define WEEKEVENTREG_POSTMAN_CHECKED_EAST_LOWER_CLOCKTOWN PACK_WEEKEVENTREG_FLAG(28, 0x02)
+#define WEEKEVENTREG_POSTMAN_CHECKED_SOUTH_LOWER_CLOCKTOWN PACK_WEEKEVENTREG_FLAG(28, 0x04)
+#define WEEKEVENTREG_LETTER_TO_KAFEI_SCHEDULED_DAY_2 PACK_WEEKEVENTREG_FLAG(28, 0x08)
+#define WEEKEVENTREG_LETTER_TO_KAFEI_SCHEDULED_DAY_3 PACK_WEEKEVENTREG_FLAG(28, 0x10)
 #define WEEKEVENTREG_28_20 PACK_WEEKEVENTREG_FLAG(28, 0x20)
 #define WEEKEVENTREG_28_40 PACK_WEEKEVENTREG_FLAG(28, 0x40)
 #define WEEKEVENTREG_28_80 PACK_WEEKEVENTREG_FLAG(28, 0x80)
@@ -1049,9 +1111,9 @@ typedef enum {
 #define WEEKEVENTREG_50_40 PACK_WEEKEVENTREG_FLAG(50, 0x40)
 #define WEEKEVENTREG_RECEIVED_PENDANT_OF_MEMORIES PACK_WEEKEVENTREG_FLAG(50, 0x80)
 #define WEEKEVENTREG_DELIVERED_PENDANT_OF_MEMORIES PACK_WEEKEVENTREG_FLAG(51, 0x01)
-#define WEEKEVENTREG_51_02 PACK_WEEKEVENTREG_FLAG(51, 0x02)
-#define WEEKEVENTREG_51_04 PACK_WEEKEVENTREG_FLAG(51, 0x04)
-#define WEEKEVENTREG_51_08 PACK_WEEKEVENTREG_FLAG(51, 0x08)
+#define WEEKEVENTREG_LETTER_TO_KAFEI_SCHEDULED_TODAY PACK_WEEKEVENTREG_FLAG(51, 0x02)
+#define WEEKEVENTREG_HIT_LAUNDRY_POOL_BELL PACK_WEEKEVENTREG_FLAG(51, 0x04)
+#define WEEKEVENTREG_KAFEI_ENTRUSTED_LINK PACK_WEEKEVENTREG_FLAG(51, 0x08)
 #define WEEKEVENTREG_51_10 PACK_WEEKEVENTREG_FLAG(51, 0x10)
 #define WEEKEVENTREG_ESCAPED_SAKONS_HIDEOUT PACK_WEEKEVENTREG_FLAG(51, 0x20)
 
@@ -1184,7 +1246,7 @@ typedef enum {
 #define WEEKEVENTREG_TINGLE_RECOGNIZED_PLAYER_FORM_LOW_BIT PACK_WEEKEVENTREG_FLAG(64, 0x08)
 #define WEEKEVENTREG_TINGLE_RECOGNIZED_PLAYER_FORM_HIGH_BIT PACK_WEEKEVENTREG_FLAG(64, 0x10)
 
-#define WEEKEVENTREG_64_20 PACK_WEEKEVENTREG_FLAG(64, 0x20)
+#define WEEKEVENTREG_CAN_USE_CURIOSITY_SHOP_PEEPHOLE PACK_WEEKEVENTREG_FLAG(64, 0x20)
 #define WEEKEVENTREG_64_40 PACK_WEEKEVENTREG_FLAG(64, 0x40)
 #define WEEKEVENTREG_TALKED_DOGGY_RACETRACK_OWNER_DAY_1 PACK_WEEKEVENTREG_FLAG(64, 0x80)
 #define WEEKEVENTREG_TALKED_DOGGY_RACETRACK_OWNER_NIGHT_1 PACK_WEEKEVENTREG_FLAG(65, 0x01)
@@ -1264,12 +1326,12 @@ typedef enum {
 #define WEEKEVENTREG_73_10 PACK_WEEKEVENTREG_FLAG(73, 0x10)
 
 #define WEEKEVENTREG_73_20 PACK_WEEKEVENTREG_FLAG(73, 0x20)
-#define WEEKEVENTREG_73_40 PACK_WEEKEVENTREG_FLAG(73, 0x40)
-#define WEEKEVENTREG_73_80 PACK_WEEKEVENTREG_FLAG(73, 0x80)
-#define WEEKEVENTREG_74_01 PACK_WEEKEVENTREG_FLAG(74, 0x01)
-#define WEEKEVENTREG_74_02 PACK_WEEKEVENTREG_FLAG(74, 0x02)
-#define WEEKEVENTREG_74_04 PACK_WEEKEVENTREG_FLAG(74, 0x04)
-#define WEEKEVENTREG_74_08 PACK_WEEKEVENTREG_FLAG(74, 0x08)
+#define WEEKEVENTREG_DEKU_LEARNED_WHERE_BOMBER_JIM_IS PACK_WEEKEVENTREG_FLAG(73, 0x40)
+#define WEEKEVENTREG_ENTERED_BOMBERS_CODE PACK_WEEKEVENTREG_FLAG(73, 0x80)
+#define WEEKEVENTREG_DEKU_TALKED_TO_BOMBER_2 PACK_WEEKEVENTREG_FLAG(74, 0x01)
+#define WEEKEVENTREG_DEKU_TALKED_TO_BOMBER_3 PACK_WEEKEVENTREG_FLAG(74, 0x02)
+#define WEEKEVENTREG_DEKU_TALKED_TO_BOMBER_4 PACK_WEEKEVENTREG_FLAG(74, 0x04)
+#define WEEKEVENTREG_DEKU_TALKED_TO_BOMBER_5 PACK_WEEKEVENTREG_FLAG(74, 0x08)
 #define WEEKEVENTREG_74_10 PACK_WEEKEVENTREG_FLAG(74, 0x10)
 #define WEEKEVENTREG_74_20 PACK_WEEKEVENTREG_FLAG(74, 0x20)
 #define WEEKEVENTREG_74_40 PACK_WEEKEVENTREG_FLAG(74, 0x40)
@@ -1325,8 +1387,8 @@ typedef enum {
 #define WEEKEVENTREG_80_08 PACK_WEEKEVENTREG_FLAG(80, 0x08)
 
 #define WEEKEVENTREG_RECEIVED_PRIORITY_MAIL PACK_WEEKEVENTREG_FLAG(80, 0x10)
-#define WEEKEVENTREG_80_20 PACK_WEEKEVENTREG_FLAG(80, 0x20)
-#define WEEKEVENTREG_80_40 PACK_WEEKEVENTREG_FLAG(80, 0x40)
+#define WEEKEVENTREG_TALKED_TO_CANYON_GUARD_WITH_NO_MASK PACK_WEEKEVENTREG_FLAG(80, 0x20)
+#define WEEKEVENTREG_TALKED_TO_CANYON_GUARD_WITH_CAPTAINS_HAT PACK_WEEKEVENTREG_FLAG(80, 0x40)
 #define WEEKEVENTREG_80_80 PACK_WEEKEVENTREG_FLAG(80, 0x80)
 #define WEEKEVENTREG_81_01 PACK_WEEKEVENTREG_FLAG(81, 0x01)
 #define WEEKEVENTREG_81_02 PACK_WEEKEVENTREG_FLAG(81, 0x02)
@@ -1342,8 +1404,7 @@ typedef enum {
 // check if already healed Kamaro the Dancing Ghost
 #define WEEKEVENTREG_82_04 PACK_WEEKEVENTREG_FLAG(82, 0x04)
 
-// Related to Swordsman's log minigame
-#define WEEKEVENTREG_82_08 PACK_WEEKEVENTREG_FLAG(82, 0x08)
+#define WEEKEVENTREG_PLAYING_SWORDSMAN_MINIGAME  PACK_WEEKEVENTREG_FLAG(82, 0x08)
 #define WEEKEVENTREG_RECEIVED_FISHERMANS_JUMPING_GAME_HEART_PIECE PACK_WEEKEVENTREG_FLAG(82, 0x10)
 #define WEEKEVENTREG_82_20 PACK_WEEKEVENTREG_FLAG(82, 0x20)
 #define WEEKEVENTREG_82_40 PACK_WEEKEVENTREG_FLAG(82, 0x40)
@@ -1391,7 +1452,7 @@ typedef enum {
 #define WEEKEVENTREG_85_80 PACK_WEEKEVENTREG_FLAG(85, 0x80)
 
 #define WEEKEVENTREG_86_01 PACK_WEEKEVENTREG_FLAG(86, 0x01)
-#define WEEKEVENTREG_86_02 PACK_WEEKEVENTREG_FLAG(86, 0x02)
+#define WEEKEVENTREG_TALKED_TO_BOMBERS_GUARD PACK_WEEKEVENTREG_FLAG(86, 0x02)
 #define WEEKEVENTREG_86_04 PACK_WEEKEVENTREG_FLAG(86, 0x04)
 #define WEEKEVENTREG_LISTENED_ANJU_POSTMAN_CONVERSATION PACK_WEEKEVENTREG_FLAG(86, 0x08)
 #define WEEKEVENTREG_86_10 PACK_WEEKEVENTREG_FLAG(86, 0x10)
@@ -1449,7 +1510,7 @@ typedef enum {
 
 #define WEEKEVENTREG_90_02 PACK_WEEKEVENTREG_FLAG(90, 0x02)
 #define WEEKEVENTREG_90_04 PACK_WEEKEVENTREG_FLAG(90, 0x04)
-#define WEEKEVENTREG_90_08 PACK_WEEKEVENTREG_FLAG(90, 0x08)
+#define WEEKEVENTREG_POSTMAN_RECEIVED_LETTER_TO_KAFEI PACK_WEEKEVENTREG_FLAG(90, 0x08)
 #define WEEKEVENTREG_RECEIVED_GOSSIP_STONE_GROTTO_HEART_PIECE PACK_WEEKEVENTREG_FLAG(90, 0x10)
 
 // Related to Fishermans's jumping minigame
@@ -1458,8 +1519,8 @@ typedef enum {
 #define WEEKEVENTREG_90_80 PACK_WEEKEVENTREG_FLAG(90, 0x80)
 #define WEEKEVENTREG_91_01 PACK_WEEKEVENTREG_FLAG(91, 0x01)
 #define WEEKEVENTREG_91_02 PACK_WEEKEVENTREG_FLAG(91, 0x02)
-#define WEEKEVENTREG_91_04 PACK_WEEKEVENTREG_FLAG(91, 0x04)
-#define WEEKEVENTREG_91_08 PACK_WEEKEVENTREG_FLAG(91, 0x08)
+#define WEEKEVENTREG_LETTER_TO_KAFEI_SENT_IN_TIME PACK_WEEKEVENTREG_FLAG(91, 0x04)
+#define WEEKEVENTREG_LETTER_TO_KAFEI_SENT_LATE PACK_WEEKEVENTREG_FLAG(91, 0x08)
 #define WEEKEVENTREG_91_10 PACK_WEEKEVENTREG_FLAG(91, 0x10)
 #define WEEKEVENTREG_91_20 PACK_WEEKEVENTREG_FLAG(91, 0x20)
 #define WEEKEVENTREG_91_40 PACK_WEEKEVENTREG_FLAG(91, 0x40)

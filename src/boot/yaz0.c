@@ -1,3 +1,4 @@
+#include "macros.h"
 #include "fault.h"
 #include "libc64/sprintf.h"
 #include "libc64/sleep.h"
@@ -10,7 +11,9 @@ uintptr_t sYaz0CurRomStart;
 size_t sYaz0CurSize;
 u8* sYaz0MaxPtr;
 
+#if MM_VERSION >= N64_US
 void* gYaz0DecompressDstEnd;
+#endif
 
 #include "yaz0.h"
 
@@ -55,8 +58,7 @@ void* Yaz0_NextDMA(u8* curSrcPos) {
     } else {
         oldPri = osGetThreadPri(NULL);
         osSetThreadPri(NULL, OS_PRIORITY_APPMAX);
-        // Compression/decompression error
-        osSyncPrintf("圧縮展開異常\n");
+        osSyncPrintf(T("圧縮展開異常\n", "compression/decompression error\n"));
         osSetThreadPri(NULL, oldPri);
     }
 
@@ -83,6 +85,9 @@ s32 Yaz0_DecompressImpl(u8* src, u8* dst) {
     u32 magic = ((Yaz0Header*)src)->magic;
 
     if (magic != YAZ0_MAGIC) {
+        PRINTF(T("slidstart_szs IDが違います (%02x %02x %02x %02x %08x)\n",
+                 "The slidstart_szs ID is incorrect (%02x %02x %02x %02x %08x)\n"),
+               src[0], src[1], src[2], src[3], magic);
         return -1;
     }
 
@@ -123,7 +128,9 @@ s32 Yaz0_DecompressImpl(u8* src, u8* dst) {
         bitIndex--;
     } while (dst != dstEnd);
 
+#if MM_VERSION >= N64_US
     gYaz0DecompressDstEnd = dstEnd;
+#endif
 
     return 0;
 }

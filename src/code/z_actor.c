@@ -1729,7 +1729,8 @@ void Actor_UpdateBgCheckInfo(PlayState* play, Actor* actor, f32 wallCheckHeight,
         func_800B7678(play, actor, &pos, updBgCheckInfoFlags);
         y = actor->world.pos.y;
 
-        if (WaterBox_GetSurface1(play, &play->colCtx, actor->world.pos.x, actor->world.pos.z, &y, &waterbox)) {
+        if (BgCheck_GetWaterSurfaceNoBgIdAlt(play, &play->colCtx, actor->world.pos.x, actor->world.pos.z, &y,
+                                             &waterbox)) {
             actor->depthInWater = y - actor->world.pos.y;
             if (actor->depthInWater <= 0.0f) {
                 actor->bgCheckFlags &= ~(BGCHECKFLAG_WATER | BGCHECKFLAG_WATER_TOUCH);
@@ -1759,7 +1760,8 @@ void Actor_UpdateBgCheckInfo(PlayState* play, Actor* actor, f32 wallCheckHeight,
         WaterBox* waterbox;
         f32 y = actor->world.pos.y;
 
-        if (WaterBox_GetSurface1(play, &play->colCtx, actor->world.pos.x, actor->world.pos.z, &y, &waterbox)) {
+        if (BgCheck_GetWaterSurfaceNoBgIdAlt(play, &play->colCtx, actor->world.pos.x, actor->world.pos.z, &y,
+                                             &waterbox)) {
             actor->depthInWater = y - actor->world.pos.y;
 
             if (actor->depthInWater < 0.0f) {
@@ -3831,51 +3833,90 @@ void Enemy_StartFinishingBlow(PlayState* play, Actor* actor) {
     SoundSource_PlaySfxAtFixedWorldPos(play, &actor->world.pos, 20, NA_SE_EN_LAST_DAMAGE);
 }
 
-// blinking routine
-s16 func_800BBAC0(BlinkInfo* info, s16 arg1, s16 arg2, s16 arg3) {
-    if (DECR(info->blinkTimer) == 0) {
-        info->blinkTimer = Rand_S16Offset(arg1, arg2);
+/**
+ * Updates `FaceChange` data for a blinking pattern.
+ * This system expects that the actor using the system has defined 3 faces in this exact order:
+ * "eyes open", "eyes half open", "eyes closed".
+ *
+ * @param faceChange  pointer to an actor's faceChange data
+ * @param blinkIntervalBase  The base number of frames between blinks
+ * @param blinkIntervalRandRange  The range for a random number of frames that can be added to `blinkIntervalBase`
+ * @param blinkDuration  The number of frames it takes for a single blink to occur
+ */
+s16 FaceChange_UpdateBlinking(FaceChange* faceChange, s16 blinkIntervalBase, s16 blinkIntervalRandRange,
+                              s16 blinkDuration) {
+    if (DECR(faceChange->timer) == 0) {
+        faceChange->timer = Rand_S16Offset(blinkIntervalBase, blinkIntervalRandRange);
     }
 
-    if (info->blinkTimer - arg3 > 0) {
-        info->eyeTexIndex = 0;
-    } else if ((info->blinkTimer - arg3 >= -1) || (info->blinkTimer < 2)) {
-        info->eyeTexIndex = 1;
+    if (faceChange->timer - blinkDuration > 0) {
+        // `timer - duration` is positive so this is the default state: "eyes open" face
+        faceChange->face = 0;
+    } else if ((faceChange->timer - blinkDuration >= -1) || (faceChange->timer < 2)) {
+        // This condition aims to catch both cases where the "eyes half open" face is needed.
+        // Note that the comparison assumes the duration of the "eyes half open" phase is 2 frames, irrespective of the
+        // value of `blinkDuration`. The duration for the "eyes closed" phase is `blinkDuration - 4`.
+        // For Player's use case `blinkDuration` is 6, so the "eyes closed" phase happens to have
+        // the same duration as each "eyes half open" phase.
+        faceChange->face = 1;
     } else {
-        info->eyeTexIndex = 2;
+        // If both conditions above fail, the only possibility left is the "eyes closed" face
+        faceChange->face = 2;
     }
 
-    return info->eyeTexIndex;
+    return faceChange->face;
 }
 
-// blinking routine
-s16 func_800BBB74(BlinkInfo* info, s16 arg1, s16 arg2, s16 arg3) {
-    if (DECR(info->blinkTimer) == 0) {
-        info->blinkTimer = Rand_S16Offset(arg1, arg2);
+/**
+ * Updates `FaceChange` data for a blinking pattern.
+ * This system expects that the actor using the system has defined 3 faces in this exact order:
+ * "eyes open", "eyes half open", "eyes closed".
+ *
+ * @param faceChange  pointer to an actor's faceChange data
+ * @param blinkIntervalBase  The base number of frames between blinks
+ * @param blinkIntervalRandRange  The range for a random number of frames that can be added to `blinkIntervalBase`
+ * @param blinkDuration  The number of frames it takes for a single blink to occur
+ */
+s16 FaceChange_UpdateBlinkingNonHuman(FaceChange* faceChange, s16 blinkIntervalBase, s16 blinkIntervalRandRange,
+                                      s16 blinkDuration) {
+    if (DECR(faceChange->timer) == 0) {
+        faceChange->timer = Rand_S16Offset(blinkIntervalBase, blinkIntervalRandRange);
     }
 
-    if (info->blinkTimer - arg3 > 0) {
-        info->eyeTexIndex = 0;
-    } else if (info->blinkTimer - arg3 == 0) {
-        info->eyeTexIndex = 1;
+    if (faceChange->timer - blinkDuration > 0) {
+        // `timer - duration` is positive so this is the default state: "eyes open" face
+        faceChange->face = 0;
+    } else if (faceChange->timer - blinkDuration == 0) {
+        faceChange->face = 1;
     } else {
-        info->eyeTexIndex = 2;
+        // If both conditions above fail, the only possibility left is the "eyes closed" face
+        faceChange->face = 2;
     }
 
-    return info->eyeTexIndex;
+    return faceChange->face;
 }
 
-// unused blinking routine
-s16 func_800BBC20(BlinkInfo* info, s16 arg1, s16 arg2, s16 arg3) {
-    if (DECR(info->blinkTimer) == 0) {
-        info->blinkTimer = Rand_S16Offset(arg1, arg2);
-        info->eyeTexIndex++;
-        if ((info->eyeTexIndex % 3) == 0) {
-            info->eyeTexIndex = (s32)(Rand_ZeroOne() * arg3) * 3;
+/**
+ * Updates `FaceChange` data for randomly selected face sets.
+ * Each set contains 3 faces. After the timer runs out, the next face in the set is used.
+ * After the third face in a set is used, a new face set is randomly chosen.
+ *
+ * @param faceChange  pointer to an actor's faceChange data
+ * @param changeTimerBase  The base number of frames between each face change
+ * @param changeTimerRandRange  The range for a random number of frames that can be added to `changeTimerBase`
+ * @param faceSetRange  The max number of face sets that will be chosen from
+ */
+s16 FaceChange_UpdateRandomSet(FaceChange* faceChange, s16 changeTimerBase, s16 changeTimerRandRange,
+                               s16 faceSetRange) {
+    if (DECR(faceChange->timer) == 0) {
+        faceChange->timer = Rand_S16Offset(changeTimerBase, changeTimerRandRange);
+        faceChange->face++;
+        if ((faceChange->face % 3) == 0) {
+            faceChange->face = (s32)(Rand_ZeroOne() * faceSetRange) * 3;
         }
     }
 
-    return info->eyeTexIndex;
+    return faceChange->face;
 }
 
 void Actor_SpawnBodyParts(Actor* actor, PlayState* play, s32 partParams, Gfx** dList) {
@@ -4685,16 +4726,25 @@ void Npc_TrackPoint(Actor* actor, NpcInteractInfo* interactInfo, s16 presetIndex
                              rotLimits.rotateYaw);
 }
 
-Gfx D_801AEF88[] = {
-    gsDPSetRenderMode(AA_EN | Z_CMP | Z_UPD | IM_RD | CLR_ON_CVG | CVG_DST_WRAP | ZMODE_XLU | FORCE_BL |
-                          G_RM_FOG_SHADE_A,
-                      AA_EN | Z_CMP | Z_UPD | IM_RD | CLR_ON_CVG | CVG_DST_WRAP | ZMODE_XLU | FORCE_BL |
-                          GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA)),
+/**
+ * A display list setting up for translucent drawing when a fading actor is partially faded,
+ * overriding the opaque render mode from the calling display list.
+ * Typically this DL is assigned to a segment that is called by the display lists from the assets.
+ * @see gActorSetupOpaDL
+ */
+Gfx gActorSetupXluDL[] = {
+    gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_XLU_SURF2 | Z_UPD),
     gsDPSetAlphaCompare(G_AC_THRESHOLD),
     gsSPEndDisplayList(),
 };
 
-Gfx D_801AEFA0[] = {
+/**
+ * A no-op display list to use when a fading actor is fully opaque,
+ * retaining the opaque render mode from the calling display list.
+ * Typically this DL is assigned to a segment that is called by the display lists from the assets.
+ * @see gActorSetupXluDL
+ */
+Gfx gActorSetupOpaDL[] = {
     gsSPEndDisplayList(),
 };
 

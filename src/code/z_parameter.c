@@ -1761,7 +1761,7 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
         }
 
         Interface_SetHudVisibility(HUD_VISIBILITY_B);
-    } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_82_08)) {
+    } else if (CHECK_WEEKEVENTREG(WEEKEVENTREG_PLAYING_SWORDSMAN_MINIGAME)) {
         // Swordsman's log minigame
         for (i = EQUIP_SLOT_C_LEFT; i <= EQUIP_SLOT_C_RIGHT; i++) {
             if (gSaveContext.buttonStatus[i] == BTN_ENABLED) {
@@ -2044,6 +2044,10 @@ void Interface_UpdateButtonsPart2(PlayState* play) {
         if (GET_PLAYER_FORM == player->transformation) {
             for (i = EQUIP_SLOT_C_LEFT; i <= EQUIP_SLOT_C_RIGHT; i++) {
                 // Individual C button
+                //! @bug When C-buttons are empty, their item code is 255. However, gPlayerFormItemRestrictions's second
+                //! dimension has only been allocated 114 elements. This leads to inconsistent behaviour when checking
+                //! the status of empty C-buttons - for most forms, the C-buttons are enabled when empty, however for
+                //! Deku Link only, empty C-buttons are disabled.
                 if (!gPlayerFormItemRestrictions[GET_PLAYER_FORM][GET_CUR_FORM_BTN_ITEM(i)]) {
                     // Item not usable in current playerForm
                     if (gSaveContext.buttonStatus[i] != BTN_DISABLED) {
@@ -2278,7 +2282,7 @@ void Interface_UpdateButtonsPart1(PlayState* play) {
                         Interface_SetHudVisibility(HUD_VISIBILITY_A_B_MINIMAP);
                     } else if ((gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE) && CHECK_EVENTINF(EVENTINF_35)) {
                         Interface_SetHudVisibility(HUD_VISIBILITY_B_MINIMAP);
-                    } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_82_08) &&
+                    } else if (!CHECK_WEEKEVENTREG(WEEKEVENTREG_PLAYING_SWORDSMAN_MINIGAME) &&
                                (gSaveContext.minigameStatus == MINIGAME_STATUS_ACTIVE)) {
                         Interface_SetHudVisibility(HUD_VISIBILITY_B);
                     } else if (play->bButtonAmmoPlusOne >= 2) {

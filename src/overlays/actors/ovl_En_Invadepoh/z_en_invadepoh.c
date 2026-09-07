@@ -45,6 +45,7 @@
 #include "sys_cfb.h"
 #include "sys_matrix.h"
 #include "z64effect.h"
+#include "z_en_item00.h"
 #include "z64horse.h"
 #include "z64lib.h"
 #include "z64play.h"

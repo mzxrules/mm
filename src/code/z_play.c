@@ -499,7 +499,7 @@ f32 Play_GetWaterSurface(PlayState* this, Vec3f* pos, s32* lightIndex) {
     WaterBox* waterBox;
     s32 bgId;
 
-    if (!WaterBox_GetSurfaceImpl(this, &this->colCtx, pos->x, pos->z, &waterSurfaceY, &waterBox, &bgId)) {
+    if (!BgCheck_GetWaterSurface(this, &this->colCtx, pos->x, pos->z, &waterSurfaceY, &waterBox, &bgId)) {
         return BGCHECK_Y_MIN;
     }
 
@@ -864,8 +864,7 @@ void Play_UpdateTransition(PlayState* this) {
                 this->envCtx.sandstormPrimA = 255;
                 this->envCtx.sandstormEnvA = 255;
 
-                // "It's here!!!!!!!!!"
-                (void)"来た!!!!!!!!!!!!!!!!!!!!!";
+                (void)T("来た!!!!!!!!!!!!!!!!!!!!!", "It's here!!!!!!!!!!!!!!!!!!!!!");
 
                 this->transitionMode = TRANS_MODE_SANDSTORM_END;
             } else {
@@ -1999,8 +1998,8 @@ s32 Play_IsUnderwater(PlayState* this, Vec3f* pos) {
 
     waterSurfacePos = *pos;
 
-    if ((WaterBox_GetSurface1(this, &this->colCtx, waterSurfacePos.x, waterSurfacePos.z, &waterSurfacePos.y,
-                              &waterBox) == true) &&
+    if ((BgCheck_GetWaterSurfaceNoBgIdAlt(this, &this->colCtx, waterSurfacePos.x, waterSurfacePos.z, &waterSurfacePos.y,
+                                          &waterBox) == true) &&
         (pos->y < waterSurfacePos.y) &&
         (BgCheck_EntityRaycastFloor3(&this->colCtx, &poly, &bgId, &waterSurfacePos) != BGCHECK_Y_MIN)) {
         return true;

@@ -1,4 +1,7 @@
 #include "z_en_item00.h"
+#include "attributes.h"
+#include "z64draw.h"
+#include "z64play.h"
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "overlays/actors/ovl_En_Elforg/z_en_elforg.h"
 

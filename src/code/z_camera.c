@@ -57,6 +57,8 @@
 
 #include "overlays/actors/ovl_En_Horse/z_en_horse.h"
 
+#pragma increment_block_number "n64-us:128"
+
 void func_800DDFE0(Camera* camera);
 s32 Camera_ChangeMode(Camera* camera, s16 mode);
 s16 Camera_ChangeSettingFlags(Camera* camera, s16 setting, s16 flags);
@@ -818,7 +820,7 @@ s32 Camera_GetWaterBoxBgCamSetting(Camera* camera, f32* waterY) {
     playerPosShape = Actor_GetWorldPosShapeRot(camera->focalActor);
     *waterY = playerPosShape.pos.y;
 
-    if (!WaterBox_GetSurfaceImpl(camera->play, &camera->play->colCtx, playerPosShape.pos.x, playerPosShape.pos.z,
+    if (!BgCheck_GetWaterSurface(camera->play, &camera->play->colCtx, playerPosShape.pos.x, playerPosShape.pos.z,
                                  waterY, &waterBox, &bgId)) {
         // player's position is not in a waterbox
         *waterY = playerPosShape.pos.y;
