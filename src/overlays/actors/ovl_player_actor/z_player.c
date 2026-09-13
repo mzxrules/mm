@@ -9984,57 +9984,63 @@ void func_8083E958(PlayState* play, Player* this) {
 }
 
 /**
- * Tests if the player's current walk animation should step on the ground this update.
+ * Tests if the player's current walk animation will strike the ground this update.
  *
- * @param prevAnimFrame the frame that the animation is starting at
- * @param delta the amount that the animation frame will change by
- * @param animLength the duration of the animation
- * @param targetFrame the frame at which the walk animation will step on the ground
+ * @param prevAnimFrame the frame that the animation is starting at.
+ * @param playSpeed the amount that the animation frame will change by.
+ * @param animLength the duration of the animation.
+ * @param targetFrame the frame at which the walk animation will step on the ground.
  *
- * @returns true if prevAnimFrame + delta will cross targetFrame
+ * @returns true if prevAnimFrame + playSpeed will cross targetFrame
  *
- * @note prevAnimFrame must be between [0, animLength)
+ * @note prevAnimFrame must be in [0, animLength)
  */
-s32 Player_CheckFootStrike(f32 prevAnimFrame, f32 delta, f32 animLength, f32 targetFrame) {
-    //! @bug When `prevAnimFrame` + `delta` exceeds the range [0, animLength), the code does not account for the case
-    //! where a wraparound would cross the `targetFrame`, missing the foot strike. In practice, only the left foot
-    //! strike could be missed in this way.
+s32 Player_CheckFootStrike(f32 prevAnimFrame, f32 playSpeed, f32 animLength, f32 targetFrame) {
+    //! @bug When `prevAnimFrame` + `playSpeed` exceeds the range [0, animLength), the code does not account for the
+    //! case where a wraparound would cross the `targetFrame`, missing the foot strike.
     //!
-    //! This if statement appears to be an attempt address this, but does nothing as `targetFrame` is never 0.
-    if ((targetFrame == 0.0f) && (delta > 0.0f)) {
+    //! This if statement appears to be an attempt to address this, but does nothing as `targetFrame` is never 0.
+    if ((targetFrame == 0.0f) && (playSpeed > 0.0f)) {
         targetFrame = animLength;
     }
 
     // Logically, this section is optimized to perform the following checks:
-    // when delta > 0, return true if...
-    // prevAnimFrame < targetFrame AND prevAnimFrame + delta >= targetFrame
-    // when delta < 0, return true if...
-    // prevAnimFrame > targetFrame AND prevAnimFrame + delta <= targetFrame
-    // when delta == 0, always return false. A stationary player should not count as a strike.
-    if (((((prevAnimFrame + delta) - targetFrame) * delta) >= 0.0f) &&
-        (((((prevAnimFrame + delta) - targetFrame) - delta) * delta) < 0.0f)) {
+    // when playSpeed > 0, return true if...
+    // prevAnimFrame < targetFrame AND prevAnimFrame + playSpeed >= targetFrame
+    // when playSpeed < 0, return true if...
+    // prevAnimFrame > targetFrame AND prevAnimFrame + playSpeed <= targetFrame
+    // when playSpeed == 0, always return false. A stationary player should not count as a strike.
+    if (((((prevAnimFrame + playSpeed) - targetFrame) * playSpeed) >= 0.0f) &&
+        (((((prevAnimFrame + playSpeed) - targetFrame) - playSpeed) * playSpeed) < 0.0f)) {
         return true;
     }
     return false;
 }
 
-void Player_UpdateWalkAnimation(Player* this, f32 animDelta) {
+/**
+ * Advances the walking animation frame state.
+ * @param playSpeed desired animation playback rate in 30 Hz (25 Hz PAL) frame units.
+ *
+ * @note In this system, walk animations are assumed to be 29 frames long at 30 Hz. Only changes in `R_UPDATE_RATE` are
+ * accounted for.
+ */
+void Player_UpdateWalkAnimation(Player* this, f32 playSpeed) {
     s32 footStrikeRight;
     f32 updateScale = R_UPDATE_RATE / 2.0f;
 
-    animDelta *= updateScale;
+    playSpeed *= updateScale;
 
-    // Ideally, animDelta should be clamped before applying updateScale, so that the animation updates consistently
+    // Ideally, playSpeed should be clamped before applying updateScale, so that the animation updates consistently
     // regardless of `R_UPDATE_RATE`
-    if (animDelta < -7.25f) {
-        animDelta = -7.25f;
-    } else if (animDelta > 7.25f) {
-        animDelta = 7.25f;
+    if (playSpeed < -7.25f) {
+        playSpeed = -7.25f;
+    } else if (playSpeed > 7.25f) {
+        playSpeed = 7.25f;
     }
 
-    footStrikeRight = Player_CheckFootStrike(this->walkAnimFrame, animDelta, 29.0f, 10.0f);
+    footStrikeRight = Player_CheckFootStrike(this->walkAnimFrame, playSpeed, 29.0f, 10.0f);
 
-    if (footStrikeRight || Player_CheckFootStrike(this->walkAnimFrame, animDelta, 29.0f, 24.0f)) {
+    if (footStrikeRight || Player_CheckFootStrike(this->walkAnimFrame, playSpeed, 29.0f, 24.0f)) {
         Player_AnimSfx_PlayFloorWalk(this, this->speedXZ);
         if (this->speedXZ > 4.0f) {
             this->stateFlags2 |= PLAYER_STATE2_8;
@@ -10042,7 +10048,7 @@ void Player_UpdateWalkAnimation(Player* this, f32 animDelta) {
         this->actor.shape.footprintFlags = footStrikeRight ? ACTOR_SHAPE_FOOTSTEP_RIGHT : ACTOR_SHAPE_FOOTSTEP_LEFT;
     }
 
-    this->walkAnimFrame += animDelta;
+    this->walkAnimFrame += playSpeed;
 
     // clamp the animation between 0 and 29
     if (this->walkAnimFrame < 0.0f) {
